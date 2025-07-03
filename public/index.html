@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Socket.IO Test</title>
+</head>
+<body>
+  <h1>Socket.IO Connection Test</h1>
+  <p id="status">Connecting...</p>
+
+  <!-- Include the Socket.IO client library -->
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <script>
+    // Connect to your server (replace port if needed)
+    const socket = io("http://192.168.1.16:5006");
+
+    // Check if connected
+    socket.on("connect", () => {
+      console.log("🎉 Connected to server:", socket.id);
+      document.getElementById("status").textContent = `Connected: ${socket.id}`;
+    });
+
+    // Handle connection error
+    socket.on("connect_error", (err) => {
+      console.error("❌ Connection failed:", err.message);
+      document.getElementById("status").textContent = `Connection error: ${err.message}`;
+    });
+
+    // Optional: Listen for custom events from server
+    // socket.on("welcome", (data) => {
+    //   console.log("Server says:", data);
+    // });
+  </script>
+</body>
+</html>
