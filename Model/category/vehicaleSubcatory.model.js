@@ -26,10 +26,6 @@ const vehicalSubcategory = new mongoose.Schema({
   vehicaleType: {
     type: String,
   },
-  vehicleNumber:{
-     type:String,
-     required:true
-  },
   isActive: {
     type: Boolean,
     default: true,

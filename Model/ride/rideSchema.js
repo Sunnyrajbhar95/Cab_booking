@@ -4,7 +4,7 @@ const rideSchema = new mongoose.Schema(
   {
     user_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "UserLogin",
       required: true,
     },
     captain_id: {
@@ -13,11 +13,10 @@ const rideSchema = new mongoose.Schema(
     },
     startLocation: {
       type: String,
-      required: true,
+      
     },
     endLocation: {
       type: String,
-      required: true,
     },
     fare: {
       type: Number,
@@ -27,6 +26,9 @@ const rideSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    time:{
+        type:String
+    },
     startDate: {
       type: Date,
     },
@@ -35,7 +37,7 @@ const rideSchema = new mongoose.Schema(
     },
     rideType: {
       type: String,
-      enum: ["InCity", "OutCity"],
+      enum: ["InCity", "OutCity","Rental"],
       required: true,
     },
     vehicleType: {
@@ -45,7 +47,7 @@ const rideSchema = new mongoose.Schema(
     },
     tripMode: {
              type:String,
-             enum:["OneWay","RoundTrip"],
+             enum:["OneWay","RoundTrip","Other"],
              default:"OneWay"  
     },
     status: {

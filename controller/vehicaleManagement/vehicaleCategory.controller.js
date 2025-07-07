@@ -40,7 +40,7 @@ export const addVehicaleSubcategory = async (req, res) => {
     const {
       categoryId,
       name,
-      vehicleNumber,
+     
       pricePerkm,
       pricePerHour,
       basePrice,
@@ -58,7 +58,7 @@ export const addVehicaleSubcategory = async (req, res) => {
 
     if (
       !name ||
-      !vehicleNumber ||
+      
       !isAllowed ||
       !comfortLevel ||
       !description ||
@@ -85,7 +85,6 @@ export const addVehicaleSubcategory = async (req, res) => {
       basePrice: basePrice || 0,
       pricePerHour: pricePerHour || 0,
       pricePerkm: pricePerkm || 0,
-      vehicleNumber,
       image: req?.file?.filename,
       description
     });
@@ -163,7 +162,7 @@ export const updatesubCategory = async (req, res) => {
     const { id } = req.params;
     const {
       name,
-      vehicleNumber,
+      description,
       pricePerkm,
       pricePerHour,
       basePrice,
@@ -182,7 +181,7 @@ export const updatesubCategory = async (req, res) => {
         message: "Vehicle sub-category not found",
       });
     subcategory.name = name || subcategory.name;
-    subcategory.vehicleNumber = vehicleNumber || subcategory.vehicleNumber;
+    subcategory.description = description || subcategory.description;
     subcategory.pricePerkm = pricePerkm || subcategory.pricePerkm;
     subcategory.pricePerHour = pricePerHour || subcategory.pricePerHour;
     subcategory.basePrice = basePrice || subcategory.basePrice;

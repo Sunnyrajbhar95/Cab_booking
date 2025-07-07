@@ -225,55 +225,6 @@ export const AdminControllers = {
     }
   },
 
-  getRidesByStatus: async (req, res) => {
-    try {
-      const { status } = req.body;
-
-      if (!status) {
-        return res.status(400).json({
-          success: false,
-          message: "Status is required",
-        });
-      }
-
-      const validStatuses = [
-        "Pending",
-        "Accepted",
-        "On_The_Way",
-        "Start",
-        "Completed",
-        "Cancelled",
-      ];
-
-      if (!validStatuses.includes(status)) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid status",
-        });
-      }
-
-      const rides = await Ride.find({ status });
-
-      if (!rides.length) {
-        return res.status(404).json({
-          success: false,
-          message: "No rides found for this status",
-        });
-      }
-
-      return res.status(200).json({
-        success: true,
-        message: "Rides fetched successfully",
-        rides,
-      });
-    } catch (err) {
-      return res.status(500).json({
-        success: false,
-        error: err.message || "Internal server error",
-      });
-    }
-  },
-
   getAllUser: async (req, res) => {
     try {
       const users = await User.find();
@@ -298,38 +249,133 @@ export const AdminControllers = {
     }
   },
 
- getSingleUser: async (req, res) => {
-  try {
-    const { userId } = req.params;
+  getSingleUser: async (req, res) => {
+    try {
+      const { userId } = req.params;
 
-    if (!userId) {
-      return res.status(400).json({
+      if (!userId) {
+        return res.status(400).json({
+          success: false,
+          message: "User ID is required",
+        });
+      }
+
+      const user = await User.findById(userId);
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: "User fetched successfully",
+        user,
+      });
+    } catch (err) {
+      return res.status(500).json({
         success: false,
-        message: "User ID is required",
+        error: err.message || "Internal server error",
       });
     }
+  },
 
-    const user = await User.findById(userId);
+  //New controller for the  ride history by the basis of Incity, outCity, And rentel
 
-    if (!user) {
-      return res.status(404).json({
+  ridesFilter: async (req, res) => {
+    try {
+      const { status } = req.params;
+
+      if (!status) {
+        return res.status(400).json({
+          success: false,
+          message: "Ride type status is required",
+        });
+      }
+
+      const allowedTypes = ["InCity", "OutCity", "Rental"];
+      if (!allowedTypes.includes(status)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid ride type status",
+        });
+      }
+
+      const rides = await Ride.find({ rideType: status })
+        .populate("user_id", "phoneNumber")
+        .populate("vehicleType");
+
+      return res.status(200).json({
+        success: true,
+        message: rides.length ? "Rides found" : "No rides found",
+        count: rides.length,
+        rides,
+      });
+    } catch (err) {
+      return res.status(500).json({
         success: false,
-        message: "User not found",
+        message: "Internal Server Error",
+        error: err.message,
       });
     }
+  },
+  getRidesByStatus: async (req, res) => {
+    try {
+      const { rideType, status } = req.query;
 
-    return res.status(200).json({
-      success: true,
-      message: "User fetched successfully",
-      user,
-    });
+      if (!status) {
+        return res.status(400).json({
+          success: false,
+          message: "Status is required",
+        });
+      }
 
-  } catch (err) {
-    return res.status(500).json({
-      success: false,
-      error: err.message || "Internal server error",
-    });
-  }
-}
+      const validStatuses = [
+        "Pending",
+        "Accepted",
+        "On_The_Way",
+        "Start",
+        "Completed",
+        "Cancelled",
+      ];
+      const validRideTypes = ["InCity", "OutCity", "Rental"];
+      if (rideType && !validRideTypes.includes(rideType)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid ride type",
+        });
+      }
 
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid status",
+        });
+      }
+
+      const rides = await Ride.find({ rideType, status })
+      .populate("user_id","phoneNumber")
+      .populate("vehicleType");
+
+      if (!rides.length) {
+        return res.status(404).json({
+          success: false,
+          message: "No rides found for this status",
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: "Rides fetched successfully",
+        rides,
+      });
+    } catch (err) {
+      return res.status(500).json({
+        success: false,
+        error: err.message || "Internal server error",
+      });
+    }
+  },
 };

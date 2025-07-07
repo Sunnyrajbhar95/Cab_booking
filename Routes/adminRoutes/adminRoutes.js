@@ -92,7 +92,9 @@ adminProtectedRoute
       { name: "licence", maxCount: 1 },
     ]),
     updateDriver
-  );
+  )
+  // Route related to filter ride
+  .get("/ride/:status",AdminControllers.ridesFilter)
 
 adminRoute.use(adminProtectedRoute);
 

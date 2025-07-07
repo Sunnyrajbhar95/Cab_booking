@@ -19,22 +19,22 @@ export const getRideForOutstation = async (req, res) => {
       });
     }
     const vehicles = await SubVehicale.find({ isAllowed: "OutstationBooking" });
-    const rideDetail = vehicles.map((vehicle) => {
-      var totalAmount = Math.round(
+    const ridedetails = vehicles.map((vehicle) => {
+      var amount = Math.round(
         Number(vehicle?.basePrice) +
           Number(vehicle?.pricePerkm) * Number(distance)
       );
       if (tripMode === "RoundTrip") totalAmount = 2 * totalAmount;
       return {
         vehicle,
-        totalAmount,
+        amount,
       };
     });
 
     return res.status(200).json({
       success: true,
       message: "Fare fetched successfully",
-      rideDetail,
+      ridedetails,
     });
   } catch (err) {
     return res.status(500).json({
