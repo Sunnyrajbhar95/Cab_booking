@@ -283,42 +283,28 @@ export const completeRideNotification = async (user_Id, ride) => {
 };
 
 //sending  new ride booking notification to all active captains
-export const sendNotificationToActiveCaptain = async (data) => {
+export const sendNotificationToActiveCaptain = async (data,vehicle) => {
   try {
-    console.log("hellos======>");
-    const profiles = await Profile.find({ status: "Active" }).select(
-      "phoneNumber"
-    );
-
-    console.log(profiles, "============================>");
-
-    if (!profiles.length) {
-      console.log("No active captain found");
-      return;
+      
+    console.log(data?.vehicleType)
+    const captain=await Profile.find({vehicleId:data?.vehicleType,status:"Active"}).populate("captainId","_id")
+     
+    for(let rider of captain)
+    { 
+        //  console.log(rider?.captainId)
+       const {socketId}=captainSockets.get(rider?.captainId?._id?.toString())
+ 
+      //  console.log(socketId,"========>")
+       if(socketId)
+       {
+            _io.to(socketId).emit("new_ride",{
+                 message:"You got new ride notification",
+                 data,
+                 vehicle
+            })
+       }
     }
-
-    for (const cap of profiles) {
-      const captain = await Captain.findOne({
-        phoneNumber: cap.phoneNumber,
-      }).select("_id");
-      if (!captain) {
-        console.log(`Captain not found for phoneNumber: ${cap.phoneNumber}`);
-        continue;
-      }
-
-      console.log(captain, "=========>");
-      const captainSocketData = captainSockets.get(captain._id.toString());
-      console.log(captainSocketData,"================>socket id");
-      if (captainSocketData) {
-        _io?.to(captainSocketData).emit("new_ride", {
-          message: "You got a new ride",
-          data,
-        });
-        console.log(`🚀 Ride sent to captain ${captain._id}`);
-      } else {
-        console.log(`Captain ${captain._id} is not connected`);
-      }
-    }
+    // console.log(captain,"Just checking the captain id===>")
   } catch (error) {
     console.log(`❌ Error while sending notification: ${error.message}`);
   }

@@ -148,6 +148,18 @@ export const CreateRide = async (req, res) => {
         message: "User Not found",
       });
 
+   
+
+     const vehicle=await  SubVehicale.findById(vehicleType);
+     if(!vehicle){
+         return res.status(404).json({
+             success:false,
+             message:"vehicle Not found"
+         })
+     }
+
+
+     console.log(vehicle,"=========>check")
     const otp = generateOTP();
     const ride = await Ride.create({
       user_id: id,
@@ -164,7 +176,7 @@ export const CreateRide = async (req, res) => {
       tripMode,
     });
     // sendRideBookingNotification(ride);
-    // sendNotificationToActiveCaptain(ride)
+    sendNotificationToActiveCaptain(ride,vehicle)
     return res.status(200).json({
       success: true,
       message: "Ride created successfully",
